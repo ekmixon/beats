@@ -1,4 +1,4 @@
-FROM golang:1.17.2
+FROM golang:bullseye
 
 RUN \
     apt-get update \
