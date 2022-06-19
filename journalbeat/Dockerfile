@@ -1,4 +1,4 @@
-FROM golang:1.17.2
+FROM golang:1.19beta1
 
 RUN \
     apt-get update \
