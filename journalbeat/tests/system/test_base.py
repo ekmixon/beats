@@ -36,13 +36,14 @@ class Test(BaseTest, common_tests.TestExportsMixin):
         """
 
         self.render_config_template(
-            inputs=[{
-                "paths": [
-                    self.beat_path + "/tests/system/input/",
-                ],
-                "seek": "tail",
-            }],
+            inputs=[
+                {
+                    "paths": [f"{self.beat_path}/tests/system/input/"],
+                    "seek": "tail",
+                }
+            ]
         )
+
         journalbeat_proc = self.start_beat()
 
         self.wait_until(lambda: self.log_contains("journalbeat is running"))
@@ -60,13 +61,14 @@ class Test(BaseTest, common_tests.TestExportsMixin):
         """
 
         self.render_config_template(
-            inputs=[{
-                "paths": [
-                    self.beat_path + "/tests/system/input/test.journal",
-                ],
-                "seek": "head",
-            }],
+            inputs=[
+                {
+                    "paths": [f"{self.beat_path}/tests/system/input/test.journal"],
+                    "seek": "head",
+                }
+            ]
         )
+
         journalbeat_proc = self.start_beat()
 
         self.wait_until(lambda: self.output_has(lines=23))
@@ -81,14 +83,15 @@ class Test(BaseTest, common_tests.TestExportsMixin):
         """
 
         self.render_config_template(
-            inputs=[{
-                "paths": [
-                    self.beat_path + "/tests/system/input/test.journal",
-                ],
-                "seek": "cursor",
-                "cursor_seek_fallback": "tail",
-            }],
+            inputs=[
+                {
+                    "paths": [f"{self.beat_path}/tests/system/input/test.journal"],
+                    "seek": "cursor",
+                    "cursor_seek_fallback": "tail",
+                }
+            ]
         )
+
         journalbeat_proc = self.start_beat()
 
         self.wait_until(lambda: self.log_contains("journalbeat is running"))
@@ -107,9 +110,12 @@ class Test(BaseTest, common_tests.TestExportsMixin):
 
         registry_path = os.path.join(os.path.abspath(self.working_dir), "data", "registry")
         os.mkdir(os.path.dirname(registry_path))
-        copyfile(self.beat_path + "/tests/system/input/test.registry",
-                 os.path.join(os.path.abspath(self.working_dir), "data/registry"))
-        input_path = self.beat_path + "/tests/system/input/test.journal"
+        copyfile(
+            f"{self.beat_path}/tests/system/input/test.registry",
+            os.path.join(os.path.abspath(self.working_dir), "data/registry"),
+        )
+
+        input_path = f"{self.beat_path}/tests/system/input/test.journal"
         self._prepare_registry_file(registry_path, input_path)
 
         self.render_config_template(
@@ -133,16 +139,17 @@ class Test(BaseTest, common_tests.TestExportsMixin):
         """
 
         self.render_config_template(
-            inputs=[{
-                "paths": [
-                    self.beat_path + "/tests/system/input/test.journal",
-                ],
-                "seek": "head",
-                "include_matches": [
-                    "syslog.priority=6",
-                ]
-            }],
+            inputs=[
+                {
+                    "paths": [f"{self.beat_path}/tests/system/input/test.journal"],
+                    "seek": "head",
+                    "include_matches": [
+                        "syslog.priority=6",
+                    ],
+                }
+            ]
         )
+
         journalbeat_proc = self.start_beat()
 
         self.wait_until(lambda: self.output_has(lines=6))
@@ -160,18 +167,15 @@ class Test(BaseTest, common_tests.TestExportsMixin):
             inputs=[
                 {
                     "id": "serviceA.unit",
-                    "paths": [
-                        self.beat_path + "/tests/system/input/test.journal",
-                    ],
+                    "paths": [f"{self.beat_path}/tests/system/input/test.journal"],
                 },
                 {
                     "id": "serviceB unit",
-                    "paths": [
-                        self.beat_path + "/tests/system/input/test.journal",
-                    ],
-                }
-            ],
+                    "paths": [f"{self.beat_path}/tests/system/input/test.journal"],
+                },
+            ]
         )
+
 
         # Run the beat until it publishes events from both inputs.
         journalbeat_proc = self.start_beat()
@@ -193,7 +197,7 @@ class Test(BaseTest, common_tests.TestExportsMixin):
         lines = []
         with open(registry_path, "r") as registry_file:
             lines = registry_file.readlines()
-            lines[2] = "- path: " + journal_path + "\n"
+            lines[2] = f"- path: {journal_path}" + "\n"
 
         with open(registry_path, "w") as registry_file:
             for line in lines:

@@ -48,7 +48,7 @@ class Test(BaseTest):
 
         # Use default of \n and stripping \r
         if delimiter != "":
-            input_raw += "\n  line_delimiter: {}".format(delimiter)
+            input_raw += f"\n  line_delimiter: {delimiter}"
 
         input_raw = input_raw.format(host, port)
 
@@ -64,8 +64,8 @@ class Test(BaseTest):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # TCP
         sock.connect((host, port))
 
-        for n in range(0, 2):
-            sock.send(bytes("Hello World: " + str(n) + delimiter, "utf-8"))
+        for n in range(2):
+            sock.send(bytes(f"Hello World: {str(n)}{delimiter}", "utf-8"))
 
         self.wait_until(lambda: self.output_count(lambda x: x >= 2))
 
@@ -82,14 +82,15 @@ class Test(BaseTest):
         host = "127.0.0.1"
         port = 8080
         delimiter = "\n"
-        input_raw = """
+        input_raw = (
+            """
 - type: tcp
   host: "{}:{}"
   enabled: true
   framing: rfc6587
 """
-
-        input_raw += "\n  line_delimiter: {}".format(delimiter)
+            + f"\n  line_delimiter: {delimiter}"
+        )
 
         input_raw = input_raw.format(host, port)
 
@@ -105,11 +106,11 @@ class Test(BaseTest):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # TCP
         sock.connect((host, port))
 
-        for n in range(0, 2):
+        for n in range(2):
             if framing == "non-transparent":
-                sock.send(bytes("Hello World: " + str(n) + "\n", "utf-8"))
+                sock.send(bytes(f"Hello World: {str(n)}" + "\n", "utf-8"))
             if framing == "octet":
-                sock.send(bytes("14 Hello World: " + str(n), "utf-8"))
+                sock.send(bytes(f"14 Hello World: {str(n)}", "utf-8"))
 
         self.wait_until(lambda: self.output_count(lambda x: x >= 2))
 

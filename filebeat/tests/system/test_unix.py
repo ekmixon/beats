@@ -48,7 +48,7 @@ class Test(BaseTest):
 
             # Use default of \n and stripping \r
             if delimiter != "":
-                input_raw += "\n  line_delimiter: {}".format(delimiter)
+                input_raw += f"\n  line_delimiter: {delimiter}"
 
             input_raw = input_raw.format(path)
 
@@ -117,8 +117,8 @@ def send_stream_socket(path, delimiter):
     sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     sock.connect(path)
 
-    for n in range(0, 2):
-        sock.send(bytes("Hello World: " + str(n) + delimiter, "utf-8"))
+    for n in range(2):
+        sock.send(bytes(f"Hello World: {str(n)}{delimiter}", "utf-8"))
 
     return sock
 
@@ -127,7 +127,7 @@ def send_datagram_socket(path):
     sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
     sock.connect(path)
 
-    for n in range(0, 2):
-        sock.sendto(bytes("Hello World: " + str(n) + ";", "utf-8"), path)
+    for n in range(2):
+        sock.sendto(bytes(f"Hello World: {str(n)};", "utf-8"), path)
 
     return sock

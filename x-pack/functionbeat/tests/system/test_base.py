@@ -13,9 +13,9 @@ class Test(BaseTest, common_tests.TestExportsMixin):
         Basic test with exiting Functionbeat normally
         """
         self.render_config_template(
-            path=os.path.abspath(self.working_dir) + "/log/*",
-            local=True,
+            path=f"{os.path.abspath(self.working_dir)}/log/*", local=True
         )
+
 
         functionbeat_proc = self.start_beat()
         self.wait_until(lambda: self.log_contains("functionbeat is running"))
@@ -29,7 +29,7 @@ class Test(BaseTest, common_tests.TestExportsMixin):
 
         function_name = "testcloudwatchlogs"
         bucket_name = "my-bucket-name"
-        fnb_name = "fnb" + function_name
+        fnb_name = f"fnb{function_name}"
         role = "arn:aws:iam::123456789012:role/MyFunction"
         security_group_ids = ["sg-ABCDEFGHIJKL"]
         subnet_ids = ["subnet-ABCDEFGHIJKL"]
@@ -38,7 +38,7 @@ class Test(BaseTest, common_tests.TestExportsMixin):
         self._generate_dummy_binary_for_template_checksum()
 
         self.render_config_template(
-            path=os.path.abspath(self.working_dir) + "/log/*",
+            path=f"{os.path.abspath(self.working_dir)}/log/*",
             cloudwatch={
                 "name": function_name,
                 "bucket": bucket_name,
@@ -50,6 +50,7 @@ class Test(BaseTest, common_tests.TestExportsMixin):
                 "log_group": log_group,
             },
         )
+
         functionbeat_proc = self.start_beat(
             logging_args=["-d", "*"],
             extra_args=["export", "function", function_name]
@@ -77,20 +78,24 @@ class Test(BaseTest, common_tests.TestExportsMixin):
         self._generate_dummy_binary_for_template_checksum()
 
         self.render_config_template(
-            path=os.path.abspath(self.working_dir) + "/log/*",
+            path=f"{os.path.abspath(self.working_dir)}/log/*",
             cloudwatch={
                 "name": function_name,
                 "bucket": bucket_name,
             },
         )
+
         functionbeat_proc = self.start_beat(
             logging_args=["-d", "*"],
             extra_args=["export", "function", function_name]
         )
 
         self.wait_until(
-            lambda: self.log_contains("error while finding enabled functions: invalid name: '{}'".format(function_name))
+            lambda: self.log_contains(
+                f"error while finding enabled functions: invalid name: '{function_name}'"
+            )
         )
+
 
         exit_code = functionbeat_proc.kill_and_wait()
         assert exit_code != 0
@@ -114,5 +119,4 @@ class Test(BaseTest, common_tests.TestExportsMixin):
         # Trim the extra output from the Go test wrapper (like PASS/FAIL and
         # coverage information).
         log = log[:log.rindex('}') + 1]
-        function_template = json.loads(log)
-        return function_template
+        return json.loads(log)

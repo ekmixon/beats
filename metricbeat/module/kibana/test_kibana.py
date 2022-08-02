@@ -22,7 +22,7 @@ class Test(metricbeat.BaseTest):
 
         env = os.environ.get('TESTING_ENVIRONMENT')
 
-        if env == "2x" or env == "5x":
+        if env in ["2x", "5x"]:
             # Skip for 5.x and 2.x tests as Kibana endpoint not available
             raise unittest.SkipTest
 
@@ -74,9 +74,7 @@ class Test(metricbeat.BaseTest):
 
     def get_version(self):
         host = self.get_hosts()[0]
-        res = urllib.request.urlopen("http://" + host + "/api/status").read()
+        res = urllib.request.urlopen(f"http://{host}/api/status").read()
 
         body = json.loads(res)
-        version = body["version"]["number"]
-
-        return version
+        return body["version"]["number"]

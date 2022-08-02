@@ -8,12 +8,14 @@ from filebeat import BaseTest as FilebeatTest
 class FilebeatXPackTest(FilebeatTest, common_tests.TestExportsMixin):
 
     @classmethod
-    def setUpClass(self):
-        self.beat_name = "filebeat"
-        self.beat_path = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "../../"))
+    def setUpClass(cls):
+        cls.beat_name = "filebeat"
+        cls.beat_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "../../")
+        )
 
-        super(FilebeatTest, self).setUpClass()
+
+        super(FilebeatTest, cls).setUpClass()
 
     def setUp(self):
         super(FilebeatTest, self).setUp()

@@ -22,7 +22,6 @@ class Test(metricbeat.BaseTest):
         """
         unittest.skip('Skipping this test to check documented fields. We will unskip once we know which fields can be deleted')
         return
-        self.check_metricset("logstash", "node", self.get_hosts(), self.FIELDS + ["process"])
 
     @unittest.skipUnless(metricbeat.INTEGRATION_TESTS, "integration test")
     @unittest.skip("flaky test: https://github.com/elastic/beats/issues/26432")
@@ -32,7 +31,6 @@ class Test(metricbeat.BaseTest):
         """
         unittest.skip('Skipping this test to check documented fields. We will unskip once we know which fields can be deleted')
         return
-        self.check_metricset("logstash", "node_stats", self.get_hosts(), self.FIELDS)
 
     @unittest.skipUnless(metricbeat.INTEGRATION_TESTS, "integration test")
     @unittest.skip("flaky; see https://github.com/elastic/beats/issues/13947")
@@ -62,9 +60,7 @@ class Test(metricbeat.BaseTest):
 
     def get_version(self):
         host = self.get_hosts()[0]
-        res = urllib.request.urlopen("http://" + host + "/").read()
+        res = urllib.request.urlopen(f"http://{host}/").read()
 
         body = json.loads(res)
-        version = body["version"]
-
-        return version
+        return body["version"]

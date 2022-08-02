@@ -379,10 +379,10 @@ class Test(metricbeat.BaseTest):
         self.assert_fields_are_documented(evt)
 
         memory = evt["system"]["memory"]
-        if not re.match("(?i)linux", sys.platform) and not "hugepages" in memory:
+        if not re.match("(?i)linux", sys.platform) and "hugepages" not in memory:
             # Ensure presence of hugepages only in Linux
             memory["hugepages"] = None
-        if not re.match("(?i)linux", sys.platform) and not "page_stats" in memory:
+        if not re.match("(?i)linux", sys.platform) and "page_stats" not in memory:
             # Ensure presence of page_stats only in Linux
             memory["page_stats"] = None
 
@@ -524,26 +524,28 @@ class Test(metricbeat.BaseTest):
         import getpass
 
         self.render_config_template(
-            modules=[{
-                "name": "system",
-                "metricsets": ["process"],
-                "period": "5s",
-                "extras": {
-                    "process.env.whitelist": ["PATH"],
-                    "process.include_cpu_ticks": True,
-
-                    # Remove 'percpu' prior to checking documented fields because its keys are dynamic.
-                    "process.include_per_cpu": False,
-                },
-            }],
-            # Some info is only guaranteed in processes with permissions, check
-            # only on own processes.
-            processors=[{
-                "drop_event": {
-                    "when": "not.equals.user.name: " + getpass.getuser(),
-                },
-            }],
+            modules=[
+                {
+                    "name": "system",
+                    "metricsets": ["process"],
+                    "period": "5s",
+                    "extras": {
+                        "process.env.whitelist": ["PATH"],
+                        "process.include_cpu_ticks": True,
+                        # Remove 'percpu' prior to checking documented fields because its keys are dynamic.
+                        "process.include_per_cpu": False,
+                    },
+                }
+            ],
+            processors=[
+                {
+                    "drop_event": {
+                        "when": f"not.equals.user.name: {getpass.getuser()}"
+                    }
+                }
+            ],
         )
+
         proc = self.start_beat()
         self.wait_until(lambda: self.output_lines() > 0)
         proc.check_kill_and_wait()
@@ -657,5 +659,6 @@ class Test(metricbeat.BaseTest):
                 parts) == 2, "Expected proc.username to be of form DOMAIN\\username, but was %s" % observed
             observed = parts[1]
 
-        assert expected == observed, "proc.username = %s, but expected %s" % (
-            observed, expected)
+        assert (
+            expected == observed
+        ), f"proc.username = {observed}, but expected {expected}"

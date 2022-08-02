@@ -35,13 +35,14 @@ class TestExportsMixin:
         exit_code = self.run_beat(extra_args=args, logging_args=[])
         output = self.get_log()
         if exit_code != 0:
-            raise Exception("export command returned with an error: {}".format(output))
+            raise Exception(f"export command returned with an error: {output}")
         trailer = "\nPASS\n"
         pos = output.rfind(trailer)
         if pos == -1:
-            raise Exception("didn't return expected trailer:{} got:{}".format(
-                trailer.__repr__(),
-                output[-100:].__repr__()))
+            raise Exception(
+                f"didn't return expected trailer:{trailer.__repr__()} got:{output[-100:].__repr__()}"
+            )
+
         return output[:pos]
 
     def test_export_ilm_policy(self):
@@ -116,7 +117,7 @@ class TestDashboardMixin:
         )
         exit_code = self.run_beat(extra_args=["setup", "--dashboards"])
 
-        assert exit_code == 0, 'Error output: ' + self.get_log()
+        assert exit_code == 0, f'Error output: {self.get_log()}'
         assert self.log_contains("Kibana dashboards successfully loaded.")
 
     def is_saved_object_api_available(self):
@@ -124,13 +125,11 @@ class TestDashboardMixin:
         return semver.VersionInfo.parse("7.14.0") <= kibana_semver
 
     def get_version(self):
-        url = self.get_kibana_url() + "/api/status"
+        url = f"{self.get_kibana_url()}/api/status"
 
         r = requests.get(url)
         body = r.json()
-        version = body["version"]["number"]
-
-        return version
+        return body["version"]["number"]
 
     def kibana_dir(self):
         return os.path.join(self.beat_path, "build", "kibana")

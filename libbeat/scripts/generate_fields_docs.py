@@ -12,10 +12,10 @@ def document_fields(output, section, sections, path):
     if "skipdocs" in section:
         return
     if "anchor" in section:
-        output.write("[[exported-fields-{}]]\n".format(section["anchor"]))
+        output.write(f'[[exported-fields-{section["anchor"]}]]\n')
 
     if "prefix" in section:
-        output.write("{}\n".format(section["prefix"]))
+        output.write(f'{section["prefix"]}\n')
 
     # Intermediate level titles
     if ("description" in section and "prefix" not in section and
@@ -24,7 +24,7 @@ def document_fields(output, section, sections, path):
 
     if "description" in section:
         if "anchor" in section and section["name"] == "ECS":
-            output.write("== {} fields\n\n".format(section["name"]))
+            output.write(f'== {section["name"]} fields\n\n')
             output.write("""
 This section defines Elastic Common Schema (ECS) fields—a common set of fields
 to be used when storing event data in {es}.
@@ -36,11 +36,11 @@ so that they can better analyze, visualize, and correlate the data represented i
 See the {ecs-ref}[ECS reference] for more information.
 """)
         elif "anchor" in section:
-            output.write("== {} fields\n\n".format(section["name"]))
-            output.write("{}\n\n".format(section["description"]))
+            output.write(f'== {section["name"]} fields\n\n')
+            output.write(f'{section["description"]}\n\n')
         else:
-            output.write("=== {}\n\n".format(section["name"]))
-            output.write("{}\n\n".format(section["description"]))
+            output.write(f'=== {section["name"]}\n\n')
+            output.write(f'{section["description"]}\n\n')
 
     if "fields" not in section or not section["fields"]:
         return
@@ -52,11 +52,7 @@ See the {ecs-ref}[ECS reference] for more information.
         if "name" not in field:
             continue
 
-        if path == "":
-            newpath = field["name"]
-        else:
-            newpath = path + "." + field["name"]
-
+        newpath = field["name"] if path == "" else f"{path}." + field["name"]
         if "type" in field and field["type"] == "group":
             document_fields(output, field, sections, newpath)
         else:
@@ -68,44 +64,40 @@ def document_field(output, field, field_path):
     if "field_path" not in field:
         field["field_path"] = field_path
 
-    output.write("*`{}`*::\n+\n--\n".format(field["field_path"]))
+    output.write(f'*`{field["field_path"]}`*::\n+\n--\n')
 
     if "deprecated" in field:
-        output.write("\ndeprecated:[{}]\n\n".format(field["deprecated"]))
+        output.write(f'\ndeprecated:[{field["deprecated"]}]\n\n')
 
     if "description" in field:
-        output.write("{}\n\n".format(field["description"]))
+        output.write(f'{field["description"]}\n\n')
     if "type" in field:
-        output.write("type: {}\n\n".format(field["type"]))
+        output.write(f'type: {field["type"]}\n\n')
     if "example" in field:
-        output.write("example: {}\n\n".format(field["example"]))
+        output.write(f'example: {field["example"]}\n\n')
     if "format" in field:
-        output.write("format: {}\n\n".format(field["format"]))
+        output.write(f'format: {field["format"]}\n\n')
     if "required" in field:
-        output.write("required: {}\n\n".format(field["required"]))
+        output.write(f'required: {field["required"]}\n\n')
     if "path" in field:
-        output.write("alias to: {}\n\n".format(field["path"]))
+        output.write(f'alias to: {field["path"]}\n\n')
 
     # For Apm-Server docs only
     # Assign an ECS badge for ECS fields
-    if beat_title == "Apm-Server":
-        if field_path in ecs_fields():
-            output.write("{yes-icon} {ecs-ref}[ECS] field.\n\n")
+    if beat_title == "Apm-Server" and field_path in ecs_fields():
+        output.write("{yes-icon} {ecs-ref}[ECS] field.\n\n")
 
-    if "index" in field:
-        if not field["index"]:
-            output.write("{}\n\n".format("Field is not indexed."))
+    if "index" in field and not field["index"]:
+        output.write(f"Field is not indexed.\n\n")
 
-    if "enabled" in field:
-        if not field["enabled"]:
-            output.write("{}\n\n".format("Object is not enabled."))
+    if "enabled" in field and not field["enabled"]:
+        output.write(f"Object is not enabled.\n\n")
 
     output.write("--\n\n")
 
     if "multi_fields" in field:
         for subfield in field["multi_fields"]:
-            document_field(output, subfield, field_path + "." +
-                           subfield["name"])
+            document_field(output, subfield, (f"{field_path}." + subfield["name"]))
 
 
 @lru_cache(maxsize=None)
@@ -156,24 +148,23 @@ grouped in the following categories:
         for field in section["fields"]:
             name = field["name"]
             if name in fields:
-                assert field["type"] == fields[name]["type"], 'field "{}" redefined with different type "{}"'.format(
-                    name, field["type"])
+                assert (
+                    field["type"] == fields[name]["type"]
+                ), f'field "{name}" redefined with different type "{field["type"]}"'
+
                 fields[name].update(field)
             else:
                 fields[name] = field
         section["fields"] = list(fields.values())
 
     # Create sections from available fields
-    sections = {}
-    for v in docs:
-        sections[v["key"]] = v["title"]
-
+    sections = {v["key"]: v["title"] for v in docs}
     for section in sorted(docs, key=lambda field: field["key"]):
         if "anchor" not in section:
             section["anchor"] = section["key"]
 
         if "skipdocs" not in section:
-            output.write("* <<exported-fields-{}>>\n".format(section["anchor"]))
+            output.write(f'* <<exported-fields-{section["anchor"]}>>\n')
     output.write("\n--\n")
 
     # Sort alphabetically by key

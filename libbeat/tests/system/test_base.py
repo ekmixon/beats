@@ -51,8 +51,11 @@ class Test(BaseTest, common_tests.TestExportsMixin):
         """
         Checks stop on invalid config
         """
-        shutil.copy(self.beat_path + "/tests/files/invalid.yml",
-                    os.path.join(self.working_dir, "invalid.yml"))
+        shutil.copy(
+            f"{self.beat_path}/tests/files/invalid.yml",
+            os.path.join(self.working_dir, "invalid.yml"),
+        )
+
 
         exit_code = self.run_beat(config="invalid.yml")
 

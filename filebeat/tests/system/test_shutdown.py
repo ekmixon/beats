@@ -22,10 +22,10 @@ class Test(BaseTest):
         self.nasa_logs()
 
         self.render_config_template(
-            path=os.path.abspath(self.working_dir) + "/log/*",
-            ignore_older="1h"
+            path=f"{os.path.abspath(self.working_dir)}/log/*", ignore_older="1h"
         )
-        for i in range(1, 5):
+
+        for _ in range(1, 5):
             proc = self.start_beat(logging_args=["-e", "-v"])
             time.sleep(.5)
             proc.check_kill_and_wait()
@@ -39,10 +39,11 @@ class Test(BaseTest):
         self.nasa_logs()
 
         self.render_config_template(
-            path=os.path.abspath(self.working_dir) + "/log/*",
+            path=f"{os.path.abspath(self.working_dir)}/log/*",
             ignore_older="1h",
             shutdown_timeout="10s",
         )
+
         filebeat = self.start_beat()
 
         # Wait until first flush
@@ -74,8 +75,10 @@ class Test(BaseTest):
         if os.name == "nt":
             eol_offset += 1
 
-        assert (offset == (outputs[-1]["log.offset"] + eol_offset + len(outputs[-1]["message"])) or
-                offset == (outputs[-2]["log.offset"] + eol_offset + len(outputs[-2]["message"])))
+        assert offset in [
+            outputs[-1]["log.offset"] + eol_offset + len(outputs[-1]["message"]),
+            outputs[-2]["log.offset"] + eol_offset + len(outputs[-2]["message"]),
+        ]
 
     def test_shutdown_wait_timeout(self):
         """
@@ -87,10 +90,11 @@ class Test(BaseTest):
         # Use 'localhost' so connection is refused instantly
         self.render_config_template(
             logstash={"host": "localhost:12345", "timeout": 1},
-            path=os.path.abspath(self.working_dir) + "/log/*",
+            path=f"{os.path.abspath(self.working_dir)}/log/*",
             ignore_older="1h",
             shutdown_timeout="1s",
         )
+
         filebeat = self.start_beat()
 
         # Wait until it tries the first time to publish
@@ -118,22 +122,20 @@ class Test(BaseTest):
         """
 
         self.render_config_template(
-            path=os.path.abspath(self.working_dir) + "/log/test.log",
+            path=f"{os.path.abspath(self.working_dir)}/log/test.log",
             close_eof="true",
-            scan_frequency="1s"
+            scan_frequency="1s",
         )
 
-        os.mkdir(self.working_dir + "/log/")
 
-        testfile = self.working_dir + "/log/test.log"
-        file = open(testfile, 'w')
+        os.mkdir(f"{self.working_dir}/log/")
 
-        iterations = 100
-        for n in range(0, iterations):
-            file.write("entry " + str(n + 1))
-            file.write("\n")
-
-        file.close()
+        testfile = f"{self.working_dir}/log/test.log"
+        with open(testfile, 'w') as file:
+            iterations = 100
+            for n in range(iterations):
+                file.write(f"entry {str(n + 1)}")
+                file.write("\n")
 
         filebeat = self.start_beat(extra_args=["-once"])
 
@@ -156,11 +158,11 @@ class Test(BaseTest):
         # Uncompress the nasa log file.
         nasa_log = os.path.join(self.beat_path, "tests", "files", "logs", "nasa-50k.log")
         if not os.path.isfile(nasa_log):
-            with gzip.open(nasa_log + ".gz", 'rb') as infile:
+            with gzip.open(f"{nasa_log}.gz", 'rb') as infile:
                 with open(nasa_log, 'w') as outfile:
                     for line in infile:
                         outfile.write(line.decode("utf-8"))
-        os.mkdir(self.working_dir + "/log/")
+        os.mkdir(f"{self.working_dir}/log/")
         self.copy_files(["logs/nasa-50k.log"],
                         target_dir="log")
 
@@ -175,9 +177,9 @@ class Test(BaseTest):
 """
 
         self.render_config_template(
-            path=os.path.abspath(self.working_dir) + "/log/*",
-            input_raw=input_raw,
+            path=f"{os.path.abspath(self.working_dir)}/log/*", input_raw=input_raw
         )
+
         filebeat = self.start_beat()
         time.sleep(2)
 

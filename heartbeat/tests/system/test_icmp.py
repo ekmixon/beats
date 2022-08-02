@@ -29,9 +29,9 @@ class Test(BaseTest):
         }
 
         self.render_config_template(
-            path=os.path.abspath(self.working_dir) + "/log/*",
-            **config
+            path=f"{os.path.abspath(self.working_dir)}/log/*", **config
         )
+
 
         proc = self.start_beat()
 

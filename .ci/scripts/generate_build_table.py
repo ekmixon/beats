@@ -13,7 +13,7 @@ if __name__ == "__main__":
             if file.endswith("Jenkinsfile.yml") and root != ".":
                 with open(os.path.join(root, file), 'r') as f:
                     doc = yaml.load(f, Loader=yaml.FullLoader)
-                module = root.replace(".{}".format(os.sep), '')
+                module = root.replace(f".{os.sep}", '')
                 for stage in doc["stages"]:
                     withModule = False
                     platforms = [doc["platform"]]
@@ -33,8 +33,12 @@ if __name__ == "__main__":
                         platforms = doc["stages"][stage]["platforms"]
                     if "withModule" in doc["stages"][stage]:
                         withModule = doc["stages"][stage]["withModule"]
-                    if "when" in doc["stages"][stage]:
-                        if "not_changeset_full_match" not in doc["stages"][stage]["when"]:
-                            when = "optional"
-                    print("| {} | {} | `{}` | `{}` | {} | `{}` | {} |".format(
-                        module, stage, category, command, withModule, platforms, when))
+                    if (
+                        "when" in doc["stages"][stage]
+                        and "not_changeset_full_match"
+                        not in doc["stages"][stage]["when"]
+                    ):
+                        when = "optional"
+                    print(
+                        f"| {module} | {stage} | `{category}` | `{command}` | {withModule} | `{platforms}` | {when} |"
+                    )

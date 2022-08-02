@@ -11,13 +11,16 @@ default_registry_path = 'registry/filebeat'
 class BaseTest(TestCase):
 
     @classmethod
-    def setUpClass(self):
-        if not hasattr(self, "beat_name"):
-            self.beat_name = "filebeat"
-        if not hasattr(self, "beat_path"):
-            self.beat_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
+    def setUpClass(cls):
+        if not hasattr(cls, "beat_name"):
+            cls.beat_name = "filebeat"
+        if not hasattr(cls, "beat_path"):
+            cls.beat_path = os.path.abspath(
+                os.path.join(os.path.dirname(__file__), "../../")
+            )
 
-        super(BaseTest, self).setUpClass()
+
+        super(BaseTest, cls).setUpClass()
 
     @property
     def registry(self):
@@ -32,11 +35,11 @@ class BaseTest(TestCase):
         return self.log_access()
 
     def access_registry(self, name=None, data_path=None):
-        data_path = data_path if data_path else self.working_dir
+        data_path = data_path or self.working_dir
         return Registry(data_path, name)
 
     def log_access(self, file=None):
-        file = file if file else self.beat_name + ".log"
+        file = file or f"{self.beat_name}.log"
         return LogState(os.path.join(self.working_dir, file))
 
     def has_registry(self, name=None, data_path=None):
@@ -126,9 +129,7 @@ class Registry:
         return entries
 
     def count(self, filter=None):
-        if not self.exists():
-            return 0
-        return len(self.load(filter=filter))
+        return len(self.load(filter=filter)) if self.exists() else 0
 
     def _read_registry(self):
         data = {}
@@ -138,7 +139,7 @@ class Registry:
                 data_file_path = f.read().strip()
         if data_file_path and os.path.isfile(data_file_path):
             with open(data_file_path) as f:
-                data = dict((x['_key'], x) for x in json.load(f))
+                data = {x['_key']: x for x in json.load(f)}
 
         with open(self._log_path) as f:
             try:

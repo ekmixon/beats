@@ -25,9 +25,9 @@ class Test(BaseTest, common_tests.TestExportsMixin):
         }
 
         self.render_config_template(
-            path=os.path.abspath(self.working_dir) + "/log/*",
-            **config
+            path=f"{os.path.abspath(self.working_dir)}/log/*", **config
         )
+
 
         heartbeat_proc = self.start_beat()
         self.wait_until(lambda: self.log_contains("heartbeat is running"))
@@ -55,9 +55,9 @@ class Test(BaseTest, common_tests.TestExportsMixin):
         }
 
         self.render_config_template(
-            path=os.path.abspath(self.working_dir) + "/log/*",
-            **config
+            path=f"{os.path.abspath(self.working_dir)}/log/*", **config
         )
+
 
         heartbeat_proc = self.start_beat()
         self.wait_until(lambda: self.output_has(lines=2))
@@ -80,9 +80,9 @@ class Test(BaseTest, common_tests.TestExportsMixin):
         }
 
         self.render_config_template(
-            path=os.path.abspath(self.working_dir) + "/log/*",
-            **config
+            path=f"{os.path.abspath(self.working_dir)}/log/*", **config
         )
+
 
         heartbeat_proc = self.start_beat()
         self.wait_until(lambda: self.log_contains("heartbeat is running"))
@@ -155,9 +155,9 @@ class Test(BaseTest, common_tests.TestExportsMixin):
         }
 
         self.render_config_template(
-            path=os.path.abspath(self.working_dir) + "/*",
-            **config
+            path=f"{os.path.abspath(self.working_dir)}/*", **config
         )
+
 
         heartbeat_proc = self.start_beat()
         self.wait_until(lambda: self.output_lines() > 0)
@@ -172,18 +172,18 @@ class Test(BaseTest, common_tests.TestExportsMixin):
             "urls": ["http://localhost:9200"],
         }
         if local:
-            monitor.update(local)
+            monitor |= local
 
         config = {
             "monitors": [monitor]
         }
         if top:
-            config.update(top)
+            config |= top
 
         self.render_config_template(
-            path=os.path.abspath(self.working_dir) + "/*",
-            **config
+            path=f"{os.path.abspath(self.working_dir)}/*", **config
         )
+
 
         heartbeat_proc = self.start_beat()
         self.wait_until(lambda: self.output_lines() > 0)
@@ -239,5 +239,5 @@ class Test(BaseTest, common_tests.TestExportsMixin):
             self.assertEqual(
                 output["event.dataset"],
                 output["monitor.type"],
-                "Check for event.dataset in {} failed".format(output)
+                f"Check for event.dataset in {output} failed",
             )

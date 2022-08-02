@@ -24,7 +24,7 @@ class Test(metricbeat.BaseTest):
         username = "postgres"
         password = os.getenv("POSTGRESQL_PASSWORD", default="postgres")
         host = self.compose_host()
-        dsn = "postgres://{}?sslmode=disable".format(host)
+        dsn = f"postgres://{host}?sslmode=disable"
         return ([dsn], username, password)
 
     @unittest.skipUnless(metricbeat.INTEGRATION_TESTS, "integration test")

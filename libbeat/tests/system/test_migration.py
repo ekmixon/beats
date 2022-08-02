@@ -27,10 +27,14 @@ class TestCommands(BaseTest):
 
         exit_code = self.run_beat(
             extra_args=[
-                "export", "template",
-                "-E", "setup.template.fields=" + self.fields_path,
+                "export",
+                "template",
+                "-E",
+                f"setup.template.fields={self.fields_path}",
             ],
-            config="libbeat.yml")
+            config="libbeat.yml",
+        )
+
 
         assert exit_code == 0
         assert self.log_contains('migration_alias_false')
@@ -43,11 +47,16 @@ class TestCommands(BaseTest):
 
         exit_code = self.run_beat(
             extra_args=[
-                "export", "template",
-                "-E", "setup.template.fields=" + self.fields_path,
-                "-E", "migration.6_to_7.enabled=false",
+                "export",
+                "template",
+                "-E",
+                f"setup.template.fields={self.fields_path}",
+                "-E",
+                "migration.6_to_7.enabled=false",
             ],
-            config="libbeat.yml")
+            config="libbeat.yml",
+        )
+
 
         assert exit_code == 0
         assert self.log_contains('migration_alias_false')
@@ -60,11 +69,16 @@ class TestCommands(BaseTest):
 
         exit_code = self.run_beat(
             extra_args=[
-                "export", "template",
-                "-E", "setup.template.fields=" + self.fields_path,
-                "-E", "migration.6_to_7.enabled=true",
+                "export",
+                "template",
+                "-E",
+                f"setup.template.fields={self.fields_path}",
+                "-E",
+                "migration.6_to_7.enabled=true",
             ],
-            config="libbeat.yml")
+            config="libbeat.yml",
+        )
+
 
         assert exit_code == 0
         assert self.log_contains('migration_alias_false')

@@ -46,8 +46,7 @@ class Test(AuditbeatXPackTest):
     # 1/20 build fails https://github.com/elastic/beats/issues/21308
     @pytest.mark.flaky(reruns=1, reruns_delay=10)
     @unittest.skipIf(sys.platform == "win32", "Not implemented for Windows")
-    @unittest.skipIf(sys.platform.startswith('linux') and not (os.path.isdir("/var/lib/dpkg") or os.path.isdir("/var/lib/rpm")),
-                     "Only implemented for dpkg and rpm")
+    @unittest.skipIf(sys.platform.startswith('linux') and not os.path.isdir("/var/lib/dpkg") and not os.path.isdir("/var/lib/rpm"), "Only implemented for dpkg and rpm")
     def test_metricset_package(self):
         """
         package metricset collects information about installed packages on a system.

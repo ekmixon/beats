@@ -9,11 +9,13 @@ from time import sleep
 class BaseTest(TestCase):
 
     @classmethod
-    def setUpClass(self):
-        self.beat_name = "heartbeat"
-        self.beat_path = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "../../"))
-        super(BaseTest, self).setUpClass()
+    def setUpClass(cls):
+        cls.beat_name = "heartbeat"
+        cls.beat_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "../../")
+        )
+
+        super(BaseTest, cls).setUpClass()
 
     def start_server(self, content, status_code, **kwargs):
         class HTTPHandler(http.server.BaseHTTPRequestHandler):
@@ -61,7 +63,7 @@ class BaseTest(TestCase):
             f.write(cfg)
 
     def monitors_dir(self):
-        return self.working_dir + "/monitors.d/"
+        return f"{self.working_dir}/monitors.d/"
 
     def assert_last_status(self, status):
         self.assertEqual(self.last_output_line()["monitor.status"], status)
@@ -70,8 +72,9 @@ class BaseTest(TestCase):
         os.mkdir(self.monitors_dir())
         self.render_config_template(
             reload=True,
-            reload_path=self.monitors_dir() + "*.yml",
+            reload_path=f"{self.monitors_dir()}*.yml",
             flush_min_events=1,
         )
+
 
         self.proc = self.start_beat(extra_args=extra_beat_args)

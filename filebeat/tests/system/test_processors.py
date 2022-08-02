@@ -17,14 +17,17 @@ class Test(BaseTest):
         Check drop_fields filtering action
         """
         self.render_config_template(
-            path=os.path.abspath(self.working_dir) + "/test.log",
-            processors=[{
-                "drop_fields": {
-                    "fields": ["agent"],
-                },
-            }]
+            path=f"{os.path.abspath(self.working_dir)}/test.log",
+            processors=[
+                {
+                    "drop_fields": {
+                        "fields": ["agent"],
+                    },
+                }
+            ],
         )
-        with open(self.working_dir + "/test.log", "w") as f:
+
+        with open(f"{self.working_dir}/test.log", "w") as f:
             f.write("test message\n")
 
         filebeat = self.start_beat()
@@ -42,14 +45,17 @@ class Test(BaseTest):
         Check drop_fields filtering action
         """
         self.render_config_template(
-            path=os.path.abspath(self.working_dir) + "/test.log",
-            processors=[{
-                "include_fields": {
-                    "fields": ["source", "offset", "message"],
-                },
-            }]
+            path=f"{os.path.abspath(self.working_dir)}/test.log",
+            processors=[
+                {
+                    "include_fields": {
+                        "fields": ["source", "offset", "message"],
+                    },
+                }
+            ],
         )
-        with open(self.working_dir + "/test.log", "w") as f:
+
+        with open(f"{self.working_dir}/test.log", "w") as f:
             f.write("test message\n")
 
         filebeat = self.start_beat()
@@ -67,17 +73,20 @@ class Test(BaseTest):
         Check drop_event filtering action
         """
         self.render_config_template(
-            path=os.path.abspath(self.working_dir) + "/test*.log",
-            processors=[{
-                "drop_event": {
-                    "when": "contains.log.file.path: test1",
-                },
-            }]
+            path=f"{os.path.abspath(self.working_dir)}/test*.log",
+            processors=[
+                {
+                    "drop_event": {
+                        "when": "contains.log.file.path: test1",
+                    },
+                }
+            ],
         )
-        with open(self.working_dir + "/test1.log", "w") as f:
+
+        with open(f"{self.working_dir}/test1.log", "w") as f:
             f.write("test1 message\n")
 
-        with open(self.working_dir + "/test2.log", "w") as f:
+        with open(f"{self.working_dir}/test2.log", "w") as f:
             f.write("test2 message\n")
 
         filebeat = self.start_beat()
@@ -96,17 +105,20 @@ class Test(BaseTest):
         Check condition in processors
         """
         self.render_config_template(
-            path=os.path.abspath(self.working_dir) + "/test*.log",
-            processors=[{
-                "drop_event": {
-                    "when": "not.contains.message: test",
-                },
-            }]
+            path=f"{os.path.abspath(self.working_dir)}/test*.log",
+            processors=[
+                {
+                    "drop_event": {
+                        "when": "not.contains.message: test",
+                    },
+                }
+            ],
         )
-        with open(self.working_dir + "/test1.log", "w") as f:
+
+        with open(f"{self.working_dir}/test1.log", "w") as f:
             f.write("test1 message\n")
 
-        with open(self.working_dir + "/test2.log", "w") as f:
+        with open(f"{self.working_dir}/test2.log", "w") as f:
             f.write("test2 message\n")
 
         filebeat = self.start_beat()
@@ -125,16 +137,19 @@ class Test(BaseTest):
         Check dissect with a good tokenizer
         """
         self.render_config_template(
-            path=os.path.abspath(self.working_dir) + "/test.log",
-            processors=[{
-                "dissect": {
-                    "tokenizer": "\"%{key} world\"",
-                    "field": "message",
-                    "target_prefix": "extracted"
-                },
-            }]
+            path=f"{os.path.abspath(self.working_dir)}/test.log",
+            processors=[
+                {
+                    "dissect": {
+                        "tokenizer": "\"%{key} world\"",
+                        "field": "message",
+                        "target_prefix": "extracted",
+                    },
+                }
+            ],
         )
-        with open(self.working_dir + "/test.log", "w") as f:
+
+        with open(f"{self.working_dir}/test.log", "w") as f:
             f.write("Hello world\n")
 
         filebeat = self.start_beat()
@@ -151,14 +166,17 @@ class Test(BaseTest):
         Check dissect defaults
         """
         self.render_config_template(
-            path=os.path.abspath(self.working_dir) + "/test.log",
-            processors=[{
-                "dissect": {
-                    "tokenizer": "\"%{key} world\"",
-                },
-            }]
+            path=f"{os.path.abspath(self.working_dir)}/test.log",
+            processors=[
+                {
+                    "dissect": {
+                        "tokenizer": "\"%{key} world\"",
+                    },
+                }
+            ],
         )
-        with open(self.working_dir + "/test.log", "w") as f:
+
+        with open(f"{self.working_dir}/test.log", "w") as f:
             f.write("Hello world\n")
 
         filebeat = self.start_beat()
@@ -175,16 +193,19 @@ class Test(BaseTest):
         Check dissect with a bad tokenizer
         """
         self.render_config_template(
-            path=os.path.abspath(self.working_dir) + "/test.log",
-            processors=[{
-                "dissect": {
-                    "tokenizer": "\"not %{key} world\"",
-                    "field": "message",
-                    "target_prefix": "extracted"
-                },
-            }]
+            path=f"{os.path.abspath(self.working_dir)}/test.log",
+            processors=[
+                {
+                    "dissect": {
+                        "tokenizer": "\"not %{key} world\"",
+                        "field": "message",
+                        "target_prefix": "extracted",
+                    },
+                }
+            ],
         )
-        with open(self.working_dir + "/test.log", "w") as f:
+
+        with open(f"{self.working_dir}/test.log", "w") as f:
             f.write("Hello world\n")
 
         filebeat = self.start_beat()
@@ -202,14 +223,17 @@ class Test(BaseTest):
         Check if truncate_fields with max_bytes can truncate long lines and leave short lines as is
         """
         self.render_config_template(
-            path=os.path.abspath(self.working_dir) + "/test.log",
-            processors=[{
-                "truncate_fields": {
-                    "max_bytes": 10,
-                    "fields": ["message"],
-                },
-            }]
+            path=f"{os.path.abspath(self.working_dir)}/test.log",
+            processors=[
+                {
+                    "truncate_fields": {
+                        "max_bytes": 10,
+                        "fields": ["message"],
+                    },
+                }
+            ],
         )
+
 
         self._init_and_read_test_input([
             "This is my super long line\n",
@@ -230,14 +254,17 @@ class Test(BaseTest):
         Check if truncate_fields with max_charaters can truncate long lines and leave short lines as is
         """
         self.render_config_template(
-            path=os.path.abspath(self.working_dir) + "/test.log",
-            processors=[{
-                "truncate_fields": {
-                    "max_characters": 10,
-                    "fields": ["message"],
-                },
-            }]
+            path=f"{os.path.abspath(self.working_dir)}/test.log",
+            processors=[
+                {
+                    "truncate_fields": {
+                        "max_characters": 10,
+                        "fields": ["message"],
+                    },
+                }
+            ],
         )
+
 
         self._init_and_read_test_input([
             "This is my super long line\n",
@@ -256,15 +283,14 @@ class Test(BaseTest):
         Check CSV decoding using defaults
         """
         self.render_config_template(
-            path=os.path.abspath(self.working_dir) + "/test.log",
-            processors=[{
-                "decode_csv_fields": {
-                    "fields": {
-                        "message": "csv"
-                    }
-                },
-            }]
+            path=f"{os.path.abspath(self.working_dir)}/test.log",
+            processors=[
+                {
+                    "decode_csv_fields": {"fields": {"message": "csv"}},
+                }
+            ],
         )
+
 
         self._init_and_read_test_input([
             "42,\"string with \"\"quotes\"\"\"\n",
@@ -281,18 +307,19 @@ class Test(BaseTest):
         Check CSV decoding with options
         """
         self.render_config_template(
-            path=os.path.abspath(self.working_dir) + "/test.log",
-            processors=[{
-                "decode_csv_fields": {
-                    "fields": {
-                        "message": "message"
+            path=f"{os.path.abspath(self.working_dir)}/test.log",
+            processors=[
+                {
+                    "decode_csv_fields": {
+                        "fields": {"message": "message"},
+                        "overwrite_keys": True,
+                        "separator": "\"\t\"",
+                        "trim_leading_space": True,
                     },
-                    "overwrite_keys": True,
-                    "separator": "\"\t\"",
-                    "trim_leading_space": True,
-                },
-            }]
+                }
+            ],
         )
+
 
         self._init_and_read_test_input([
             " 42\t hello world\t  \"string\twith tabs and \"broken\" quotes\"\n",
@@ -307,16 +334,16 @@ class Test(BaseTest):
         Check URL-decoding using defaults
         """
         self.render_config_template(
-            path=os.path.abspath(self.working_dir) + "/test.log",
-            processors=[{
-                "urldecode": {
-                    "fields": [{
-                        "from": "message",
-                        "to": "decoded"
-                    }]
-                },
-            }]
+            path=f"{os.path.abspath(self.working_dir)}/test.log",
+            processors=[
+                {
+                    "urldecode": {
+                        "fields": [{"from": "message", "to": "decoded"}]
+                    },
+                }
+            ],
         )
+
 
         self._init_and_read_test_input([
             "correct data\n",
@@ -347,7 +374,7 @@ function process(evt) {
 
     def _test_javascript_processor_with_source(self, script_source):
         self.render_config_template(
-            path=os.path.abspath(self.working_dir) + "/test.log",
+            path=f"{os.path.abspath(self.working_dir)}/test.log",
             processors=[
                 {
                     "script": {
@@ -355,8 +382,9 @@ function process(evt) {
                         "source": script_source,
                     },
                 },
-            ]
+            ],
         )
+
 
         self._init_and_read_test_input([
             "test line 1\n",
@@ -365,7 +393,7 @@ function process(evt) {
         ])
 
     def _init_and_read_test_input(self, input_lines):
-        with io.open(self.working_dir + "/test.log", "w", encoding="utf-8") as f:
+        with io.open(f"{self.working_dir}/test.log", "w", encoding="utf-8") as f:
             for line in input_lines:
                 f.write((line))
 

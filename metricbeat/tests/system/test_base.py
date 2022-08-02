@@ -82,7 +82,7 @@ class Test(BaseTest, common_tests.TestExportsMixin):
         )
         exit_code = self.run_beat(extra_args=["setup", "--dashboards"])
 
-        assert exit_code == 0, 'Error output: ' + self.get_log()
+        assert exit_code == 0, f'Error output: {self.get_log()}'
         assert self.log_contains("Kibana dashboards successfully loaded.")
 
     @unittest.skipUnless(INTEGRATION_TESTS, "integration test")
@@ -124,10 +124,8 @@ class Test(BaseTest, common_tests.TestExportsMixin):
         return semver.VersionInfo.parse("7.14.0") <= kibana_semver
 
     def get_version(self):
-        url = self.get_kibana_url() + "/api/status"
+        url = f"{self.get_kibana_url()}/api/status"
 
         r = requests.get(url)
         body = r.json()
-        version = body["version"]["number"]
-
-        return version
+        return body["version"]["number"]
